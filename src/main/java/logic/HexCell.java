@@ -29,10 +29,34 @@ public class HexCell implements Comparable<HexCell> {
     private int row;
 
     private final int index;
+    private int indexMagic;
 
     public HexCell(String position, int index){
         setPosition(position);
         this.index=index;
+        this.indexMagic=-1;
+    }
+
+    public HexCell(String position, int index, int indexMagic){
+        setPosition(position);
+        this.index=index;
+        this.indexMagic=indexMagic;
+    }
+
+    public int getIndexMagic(){
+        return this.indexMagic;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public char getCol() {
+        return col;
+    }
+
+    public int getRow() {
+        return row+1;
     }
 
     public HexCell getN() {

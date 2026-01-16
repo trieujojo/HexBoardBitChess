@@ -4,18 +4,32 @@ import java.util.HashMap;
 import java.util.List;
 
 public class HexBoardLUT {
+    private static HexBoardLUT singleton;
     private final HashMap<String, HexCell> board;
     private final String[] cellList;
+    private final String[] magicCellList;
 
-    public HexBoardLUT() {
+    public static HexBoardLUT getSingleton(){
+        if(singleton==null) singleton=new HexBoardLUT();
+        return singleton;
+    }
+
+    private HexBoardLUT() {
         cellList=new String[91];
+        magicCellList = new String[61];
         board = new HashMap<>();
-        int limit = 6;int index=0;
+        int limit = 6;int index=0;int indexMagic=0;
         boolean halfway = false;
         for (char a = 'a'; a <= 'l'; a++) {
             if (a != 'j') {
                 for (int i = 0; i < limit; i++) {
-                    HexCell currentCell = new HexCell("" + a + (i + 1), index);
+                    HexCell currentCell;
+                    if(i>0&&i<limit-1&&a>'a'&&a<'l') {
+                        currentCell = new HexCell("" + a + (i + 1), index, indexMagic);
+                        magicCellList[indexMagic++] = "" + a + (i + 1);
+                    }else
+                        currentCell = new HexCell("" + a + (i + 1), index);
+
                     cellList[index++]=currentCell.getPosition();
                     board.put(currentCell.getPosition(), currentCell);
                 }
@@ -144,6 +158,8 @@ public class HexBoardLUT {
     public static void main(String[] args) {
         HexBoardLUT b = new HexBoardLUT();
         System.out.println(b);
+        int i=0;
+        for(String a: b.magicCellList) System.out.print((i++)+":"+(b.getPosition(a).getIndex())+" ");
 //        HexCell cell = b.getPosition("f11");
 //        while (cell.getSe() != null) {
 //            System.out.println(cell);
