@@ -55,8 +55,8 @@ public class HexCell implements Comparable<HexCell> {
         return col;
     }
 
-    public int getRow() {
-        return row+1;
+    public int getRow() { // row as in the board we see !
+        return row;
     }
 
     public HexCell getN() {

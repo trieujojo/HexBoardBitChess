@@ -10,7 +10,7 @@ public class GameMasks {
     private BitBoard91[] blackPawnPush;
     private BitBoard91[] knightAttack;
     private BitBoard91[] kingAttack;
-    private BitBoard91[] rookAttack;
+    private BitBoard91[][] rookBlockers;
     private BitBoard91[] bishopAttack;
 
     private GameMasks(){
@@ -36,6 +36,9 @@ public class GameMasks {
             if((position.equals("c1")||position.equals("i1"))||
                     ((col=='d'||col=='h')&&row<3)||((col=='e'||col=='g')&&row<4)||
                     (row=='f'&&col<5)) continue;
+            if(((col=='a'||col=='l')&&row==6)||((col=='b'||col=='k')&&row==7)||((col=='c'||col=='i')&&row==8)||
+                    ((col=='d'||col=='h')&&row==9)||((col=='e'||col=='g')&&row==10)||(col=='f'&&row==11)) continue;
+//            System.out.print(current.getPosition());
             whitePawnPush[i].toggle(current.getN().getIndex());
             if(position.equals("b1")||position.equals("c2")||position.equals("d3")||
                     position.equals("e4")||position.equals("f5")||position.equals("g4")
@@ -47,8 +50,8 @@ public class GameMasks {
         for (int i = 0; i < 91; i++) {
             blackPawnPush[i]=new BitBoard91();
             HexCell current = LUT.getPosition(LUT.getCoordinateFromIndex(i));
-            String position = current.getPosition(); char col = current.getCol(); int row = current.getRow();
-            if(row>7) continue;
+            int row = current.getRow();
+            if(row>7||row==1) continue;
             blackPawnPush[i].toggle(current.getS().getIndex());
             if (row==7)
                 blackPawnPush[i].toggle(current.getS().getS().getIndex());
@@ -84,38 +87,40 @@ public class GameMasks {
             }
         }
 
-        rookAttack=new BitBoard91[91];
+        rookBlockers =new BitBoard91[3][91];
         for (int i = 0; i < 91; i++) {
-            rookAttack[i]=new BitBoard91();
+            rookBlockers[0][i]=new BitBoard91();
+            rookBlockers[1][i]=new BitBoard91();
+            rookBlockers[2][i]=new BitBoard91();
             HexCell current = LUT.getPosition(LUT.getCoordinateFromIndex(i));
             HexCell dir = current.getN();
-            while(dir!=null) {
-                rookAttack[i].toggle(dir.getIndex());
+            while(dir.getN()!=null) {
+                rookBlockers[0][i].toggle(dir.getIndex());
                 dir = dir.getN();
             }
-            dir=current.getNe();
-            while(dir!=null) {
-                rookAttack[i].toggle(dir.getIndex());
-                dir = dir.getNe();
-            }
-            dir=current.getSe();
-            while(dir!=null) {
-                rookAttack[i].toggle(dir.getIndex());
-                dir = dir.getSe();
-            }
             dir=current.getS();
-            while(dir!=null) {
-                rookAttack[i].toggle(dir.getIndex());
+            while(dir.getS()!=null) {
+                rookBlockers[0][i].toggle(dir.getIndex());
                 dir = dir.getS();
             }
+            dir=current.getNe();
+            while(dir.getNe()!=null) {
+                rookBlockers[1][i].toggle(dir.getIndex());
+                dir = dir.getNe();
+            }
             dir=current.getSw();
-            while(dir!=null) {
-                rookAttack[i].toggle(dir.getIndex());
+            while(dir.getSw()!=null) {
+                rookBlockers[1][i].toggle(dir.getIndex());
                 dir = dir.getSw();
             }
+            dir=current.getSe();
+            while(dir.getSe()!=null) {
+                rookBlockers[2][i].toggle(dir.getIndex());
+                dir = dir.getSe();
+            }
             dir=current.getNw();
-            while(dir!=null) {
-                rookAttack[i].toggle(dir.getIndex());
+            while(dir.getNw()!=null) {
+                rookBlockers[2][i].toggle(dir.getIndex());
                 dir = dir.getNw();
             }
         }
@@ -174,6 +179,33 @@ public class GameMasks {
             if(current.getL()!=null) kingAttack[i].toggle(current.getL().getIndex());
             if(current.getR()!=null) kingAttack[i].toggle(current.getR().getIndex());
         }
+    }
 
+    public BitBoard91 getBoard91() {
+        return board91;
+    }
+
+    public BitBoard91[] getWhitePawnPush() {
+        return whitePawnPush;
+    }
+
+    public BitBoard91[] getBlackPawnPush() {
+        return blackPawnPush;
+    }
+
+    public BitBoard91[] getKnightAttack() {
+        return knightAttack;
+    }
+
+    public BitBoard91[] getKingAttack() {
+        return kingAttack;
+    }
+
+    public BitBoard91[][] getRookBlockers() {
+        return rookBlockers;
+    }
+
+    public BitBoard91[] getBishopAttack() {
+        return bishopAttack;
     }
 }
