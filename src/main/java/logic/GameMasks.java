@@ -11,7 +11,7 @@ public class GameMasks {
     private BitBoard91[] knightAttack;
     private BitBoard91[] kingAttack;
     private BitBoard91[][] rookBlockers;
-    private BitBoard91[] bishopAttack;
+    private BitBoard91[] bishopBlockers;
 
     private GameMasks(){
         init();
@@ -94,69 +94,69 @@ public class GameMasks {
             rookBlockers[2][i]=new BitBoard91();
             HexCell current = LUT.getPosition(LUT.getCoordinateFromIndex(i));
             HexCell dir = current.getN();
-            while(dir.getN()!=null) {
+            while(dir!=null&&dir.getN()!=null) {
                 rookBlockers[0][i].toggle(dir.getIndex());
                 dir = dir.getN();
             }
             dir=current.getS();
-            while(dir.getS()!=null) {
+            while(dir!=null&&dir.getS()!=null) {
                 rookBlockers[0][i].toggle(dir.getIndex());
                 dir = dir.getS();
             }
             dir=current.getNe();
-            while(dir.getNe()!=null) {
+            while(dir!=null&&dir.getNe()!=null) {
                 rookBlockers[1][i].toggle(dir.getIndex());
                 dir = dir.getNe();
             }
             dir=current.getSw();
-            while(dir.getSw()!=null) {
+            while(dir!=null&&dir.getSw()!=null) {
                 rookBlockers[1][i].toggle(dir.getIndex());
                 dir = dir.getSw();
             }
             dir=current.getSe();
-            while(dir.getSe()!=null) {
+            while(dir!=null&&dir.getSe()!=null) {
                 rookBlockers[2][i].toggle(dir.getIndex());
                 dir = dir.getSe();
             }
             dir=current.getNw();
-            while(dir.getNw()!=null) {
+            while(dir!=null&&dir.getNw()!=null) {
                 rookBlockers[2][i].toggle(dir.getIndex());
                 dir = dir.getNw();
             }
         }
 
-        bishopAttack =new BitBoard91[91];
+        bishopBlockers =new BitBoard91[91];
         for (int i = 0; i < 91; i++) {
-            bishopAttack[i]=new BitBoard91();
+            bishopBlockers[i]=new BitBoard91();
             HexCell current = LUT.getPosition(LUT.getCoordinateFromIndex(i));
             HexCell dir = current.getUr();
-            while(dir!=null) {
-                bishopAttack[i].toggle(dir.getIndex());
+            while(dir!=null&&dir.getUr()!=null) {
+                bishopBlockers[i].toggle(dir.getIndex());
                 dir = dir.getUr();
             }
             dir=current.getR();
-            while(dir!=null) {
-                bishopAttack[i].toggle(dir.getIndex());
+            while(dir!=null&&dir.getR()!=null) {
+                bishopBlockers[i].toggle(dir.getIndex());
                 dir = dir.getR();
             }
             dir=current.getDr();
-            while(dir!=null) {
-                bishopAttack[i].toggle(dir.getIndex());
+            while(dir!=null&&dir.getDr()!=null) {
+                bishopBlockers[i].toggle(dir.getIndex());
                 dir = dir.getDr();
             }
             dir=current.getDl();
-            while(dir!=null) {
-                bishopAttack[i].toggle(dir.getIndex());
+            while(dir!=null&&dir.getDl()!=null) {
+                bishopBlockers[i].toggle(dir.getIndex());
                 dir = dir.getDl();
             }
             dir=current.getL();
-            while(dir!=null) {
-                bishopAttack[i].toggle(dir.getIndex());
+            while(dir!=null&&dir.getL()!=null) {
+                bishopBlockers[i].toggle(dir.getIndex());
                 dir = dir.getL();
             }
             dir=current.getUl();
-            while(dir!=null) {
-                bishopAttack[i].toggle(dir.getIndex());
+            while(dir!=null&&dir.getUl()!=null) {
+                bishopBlockers[i].toggle(dir.getIndex());
                 dir = dir.getUl();
             }
         }
@@ -205,7 +205,7 @@ public class GameMasks {
         return rookBlockers;
     }
 
-    public BitBoard91[] getBishopAttack() {
-        return bishopAttack;
+    public BitBoard91[] getBishopBlockers() {
+        return bishopBlockers;
     }
 }

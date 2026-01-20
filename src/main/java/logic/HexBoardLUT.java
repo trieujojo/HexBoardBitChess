@@ -2,6 +2,7 @@ package logic;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class HexBoardLUT {
     private static HexBoardLUT singleton;
@@ -152,15 +153,23 @@ public class HexBoardLUT {
     }
 
     public HexCell getCellFromIndex(int i){
-        return
+        return board.get(cellList[i]);
     }
 
 
     public static void main(String[] args) {
         HexBoardLUT b = new HexBoardLUT();
         System.out.println(b);
-        int i=0;
-        for(String a: b.cellList) System.out.print((i++)+":"+(b.getPosition(a))+" ");
+        Random r = new Random();
+        BitBoard91 test = new BitBoard91(r.nextLong()&r.nextLong(), r.nextLong()&r.nextLong());
+        int i = test.getIndexAfter(0);
+        while(test.getIndexAfter(i)!=-1){
+            System.out.println(i);
+            i=test.getIndexAfter(i);
+        }
+
+//        int i=0;
+//        for(String a: b.cellList) System.out.print((i++)+":"+(b.getPosition(a))+" ");
 //        HexCell cell = b.getPosition("f11");
 //        while (cell.getSe() != null) {
 //            System.out.println(cell);

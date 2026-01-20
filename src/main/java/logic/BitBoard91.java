@@ -27,9 +27,8 @@ public class BitBoard91 {
         this.high |= other.high;
     }
 
-    public void and(BitBoard91 other) {
-        this.low &= other.low;
-        this.high &= other.high;
+    public BitBoard91 and(BitBoard91 other) {
+        return new BitBoard91(this.low&other.low, this.high&other.high);
     }
 
     public void xor(BitBoard91 other) {
@@ -64,11 +63,12 @@ public class BitBoard91 {
         return -1;
     }
 
-    public int getIndex(int i){ // get the index of the first bit at index higher than i
+    public int getIndexAfter(int i){ // get the index of the first bit at index higher than i
+        if(i>90) return -1;
         if(i<64){ // search both parts
-            if(low>>i!=0) return i+1+Long.numberOfTrailingZeros(low>>i+1); //answer in first part
-            else return 64+Long.numberOfTrailingZeros(high);
-        }else if(high>>i+1!=0) return 64+ Long.numberOfTrailingZeros(high); //answer in high with i>64
+            if(i!=63&&low>>i+1!=0) return i+1+Long.numberOfTrailingZeros(low>>i+1); //answer in first part
+            else if(high!=0) return 64+Long.numberOfTrailingZeros(high);
+        }else if(high>>i+1!=0) return 1+i+ Long.numberOfTrailingZeros(high>>i+1); //answer in high with i>64
         return -1;
     }
 
@@ -83,6 +83,11 @@ public class BitBoard91 {
 
     public long getXOR(){
         return low ^ high;
+    }
+
+    public boolean getIndexBit(int i){
+        if(i<64) return ((1L << i) & low) !=0;
+        else return ((1L << i) & high) !=0;
     }
 
 

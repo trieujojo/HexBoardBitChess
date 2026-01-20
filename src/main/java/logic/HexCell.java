@@ -175,7 +175,7 @@ public class HexCell implements Comparable<HexCell> {
     @Override
     public String toString(){
 //        return ""+ col + row;
-        return (index>9?"":" ")+index;
+        return (index>9?"":"  ")+index;
     }
 
     @Override
