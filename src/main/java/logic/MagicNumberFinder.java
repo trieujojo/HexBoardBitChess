@@ -18,6 +18,8 @@ public class MagicNumberFinder {
             //toggle
             currentBoard.toggle(allBlockers.getIndexAfter(i));
             helperRook(allBlockers.getIndexAfter(i), allBlockers, currentBoard,tempArray);
+            //undo toggle
+            currentBoard.toggle(allBlockers.getIndexAfter(i));
         }else{
             //evaluate
             evaluateRook(currentBoard,tempArray);
@@ -76,7 +78,7 @@ public class MagicNumberFinder {
             }
             if(n!=null) attackPattern.toggle(n.getIndex());
         }
-        temporaryArray.put(currentBoard,attackPattern);
+        temporaryArray.put(new BitBoard91(currentBoard),attackPattern);
 //        System.out.println("current board + attack pattern for :" + currentCell);
 //        System.out.println(currentBoard);
 //        System.out.println(attackPattern);
@@ -92,9 +94,11 @@ public class MagicNumberFinder {
             //toggle
             currentBoard.toggle(allBlockers.getIndexAfter(i));
             helperBishop(allBlockers.getIndexAfter(i), allBlockers, currentBoard,tempArray);
+            //undo toggle
+            currentBoard.toggle(allBlockers.getIndexAfter(i));
         }else{
             //evaluate
-            evaluateBishop(currentBoard,tempArray);
+            evaluateBishop(new BitBoard91(currentBoard),tempArray);
         }
     }
 
@@ -143,93 +147,111 @@ public class MagicNumberFinder {
             n=n.getL();
         }
         if(n!=null) attackPattern.toggle(n.getIndex());
-
+//        System.out.println("\nCurrent board and attack pattern for :" + currentCell);
+//        System.out.println(currentBoard);
+//        System.out.println(attackPattern);
         temp.put(currentBoard,attackPattern);
     }
 
     public static void main(String[] args){
         Random r = new Random(); lut = HexBoardLUT.getSingleton();
         HashMap<BitBoard91, BitBoard91> attackPatternsRookTemp;
-        HashMap<Long, BitBoard91> attackPatternsRookFinal;
+        HashMap<Short, BitBoard91> attackPatternsRookFinal;
         long[][] magicNumbersRook;
+        long startTime= System.currentTimeMillis();
         BitBoard91[][] rookMask = GameMasks.getSingleton().getRookBlockers();
 
         GameMasks attackPatterns = GameMasks.getSingleton();
-        int max = 0;
-        for (int i = 0; i < 3; i++) {
-            for(BitBoard91 bb : GameMasks.getSingleton().getRookBlockers()[i])
-                if(bb.bitCount()>max) max = bb.bitCount();
-        }
-        System.out.println(max);
-        max=0;
-        for(BitBoard91 bb: GameMasks.getSingleton().getBishopBlockers())
-            if(bb.bitCount()>max) max= bb.bitCount();
-        System.out.println(max);
 
         // ROOK
-        /*
+        int numLoopTEST=0;
         magicNumbersRook = new long[3][91];
         BitBoard91[][] rookBlockers = attackPatterns.getRookBlockers();
         for (int j = 0; j < 3; j++) {
             for (int i = 0; i < 91; i++) {  //algo: for every possible blocker combination -> find if random hash work
                 attackPatternsRookTemp= new HashMap<>();
-                BitBoard91 current = new BitBoard91(rookBlockers[j][i]); currentAxis=j;currentCell=i;
+                BitBoard91 currentBlockers = new BitBoard91(rookBlockers[j][i]); currentAxis=j;currentCell=i;
                 // find all possible blocker pattern and the corresponding attack pattern with recursion
-                helperRook(0,current,new BitBoard91(),attackPatternsRookTemp);
+                helperRook(0,currentBlockers,new BitBoard91(),attackPatternsRookTemp);
+                System.out.print("initial size: " + attackPatternsRookTemp.size());
                 // find the magic number in a while loop
                 boolean found = false, go = true;
                 attackPatternsRookFinal=new HashMap<>();
                 long magic=0;
+                numLoopTEST =0;
                 while(!found){
-                    magic = r.nextLong() & r.nextLong();
+                    numLoopTEST++;
+                    go=true;
+//                    System.out.print(attackPatternsRookTemp.size()+" - ");
+                    magic = r.nextLong() & r.nextLong()& r.nextLong(); // generate a magic number candidate
                     for (BitBoard91 blockerPattern : attackPatternsRookTemp.keySet()){
-                        long hashKey = ((blockerPattern).getXOR()) * magic; // TODO wrong rookMask?
-                        if(!attackPatternsRookFinal.containsKey(hashKey)){//TODO use short instead of long
-                            attackPatternsRookFinal.put(hashKey,attackPatternsRookTemp.get(blockerPattern));
+                        short hashKey =(short) ((blockerPattern.getXOR() * magic)>>>(64-currentBlockers.bitCount()));
+                        if(!attackPatternsRookFinal.containsKey(hashKey)){ // if not in final
+                            attackPatternsRookFinal.put(hashKey,attackPatternsRookTemp.get(blockerPattern)); //put key in
                         }else if(!attackPatternsRookFinal.get(hashKey).equals(attackPatternsRookTemp.get(blockerPattern))){
+                            // if it's not equal to the right attack pattern
                             go=false;
                             break;
                         }
                     }
+//                    System.out.println(attackPatternsRookFinal.size());
                     if(go) found=true;
+                    else attackPatternsRookFinal=new HashMap<>();
+                    if(found) {
+                        System.out.print("found in "+numLoopTEST);
+                        System.out.println("== final size:"+attackPatternsRookFinal.size()+" - ");
+                    }
                 }
                 magicNumbersRook[j][i]=magic;
             }
         }
 
-         */
+
 
 
         //BISHOP
-        HashMap<BitBoard91,BitBoard91> attackPatternBishopTemp = new HashMap<>();
+        HashMap<BitBoard91,BitBoard91> attackPatternBishopTemp ;
         BitBoard91[] bishop= attackPatterns.getBishopBlockers();
+
+        bishopMagicNumbers = new long[91];
         for (int i = 0; i < 91; i++) {
-            currentCell=i; bishopMagicNumbers = new long[91];
+            currentCell=i;
+            attackPatternBishopTemp= new HashMap<>();
             //find all blcokers combination with helper and populate attackpatternbishoptemp
             helperBishop(0, bishop[i], new BitBoard91(),attackPatternBishopTemp);
             //find magic number and populate
-            boolean found = false, go = true;
+            boolean found = false,go;long magicCandidate=0;
             HashMap<Short, BitBoard91> hashTableBishop = new HashMap<Short, BitBoard91>();
-            System.out.println("searching...");
+            System.out.print("searching...initial size: "+attackPatternBishopTemp.size());
+            numLoopTEST=0;
             while(!found){
+                numLoopTEST++;
                 go=true;
-                long magicCandidate = r.nextLong() & r.nextLong() & r.nextLong() & r.nextLong();
+//                System.out.print(attackPatternBishopTemp.size()+" - ");
+                magicCandidate = r.nextLong() & r.nextLong() & r.nextLong() ;
 //                System.out.println(Long.bitCount(magicCandidate));
                 for(BitBoard91 bp:attackPatternBishopTemp.keySet()){
-                    short hashkey = (short)(bp.getXOR()*magicCandidate>>>64-12);
+                    short hashkey = (short)((bp.getXOR()*magicCandidate)>>>(64-bishop[i].bitCount()));
                     if(!hashTableBishop.containsKey(hashkey)){
                         hashTableBishop.put(hashkey, attackPatternBishopTemp.get(bp));
-                    }else if(hashTableBishop.get(hashkey).equals(attackPatternBishopTemp.get(bp))){
+                    }else if(!hashTableBishop.get(hashkey).equals(attackPatternBishopTemp.get(bp))){
                         go=false;
                         break;
                     }
                 }
                 if(go) found = true;
-                if(found) System.out.println("found one");
+                else hashTableBishop = new HashMap<Short, BitBoard91>();
+                if(found) {
+//                    System.out.print( hashTableBishop.size() + " ==");
+                    System.out.print(" =>found in "+numLoopTEST);
+                    System.out.println(" -- final: " +hashTableBishop.size() + " ==");
+                }
+
             }
+            bishopMagicNumbers[i]=magicCandidate;
         }
 
-        System.out.println();
+        System.out.println("algo done in: "+(System.currentTimeMillis()-startTime)+"ms");
 
     }
 }
