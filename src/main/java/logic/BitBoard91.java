@@ -42,11 +42,12 @@ public class BitBoard91 {
         else if(square<91) high ^= (1L << (square - 64));
     }
 
-    public void shiftLeft(int bits) {
+    public BitBoard91 shiftLeft(int bits) {
         long carry = low >>> (64 - bits); // Get the bits that will fall off the top of 'low'
         low <<= bits;
         high = (high << bits) | carry;   // Move 'high' and bring in the carry
         high &= 0x7FFFFFFFFFFL;          // Optional: clear bits above 91
+        return new BitBoard91(low<<bits,high<<bits);
     }
 
     public int getFirstIndex(){
@@ -66,9 +67,9 @@ public class BitBoard91 {
     public int getIndexAfter(int i){ // get the index of the first bit at index higher than i
         if(i>90) return -1;
         if(i<64){ // search both parts
-            if(i!=63&&low>>i+1!=0) return i+1+Long.numberOfTrailingZeros(low>>i+1); //answer in first part
+            if(i!=63&&low>>>i+1!=0) return i+1+Long.numberOfTrailingZeros(low>>>i+1); //answer in first part
             else if(high!=0) return 64+Long.numberOfTrailingZeros(high);
-        }else if(high>>i+1!=0) return 1+i+ Long.numberOfTrailingZeros(high>>i+1); //answer in high with i>64
+        }else if(high>>>i+1!=0) return 1+i+ Long.numberOfTrailingZeros(high>>>i+1); //answer in high with i>64
         return -1;
     }
 
@@ -121,7 +122,7 @@ public class BitBoard91 {
         while (c != null) {
             if((c.getIndex()<64&&(low>>>(c.getIndex())&1)==1)||(c.getIndex()>63&&((high>>>(c.getIndex()-64)&1)==1)))
                 sb.append(c).append("      ");
-            else sb.append('0').append("      ");
+            else sb.append('-').append("       ");
             c = c.getR();
         }
         sb.append("\n");
