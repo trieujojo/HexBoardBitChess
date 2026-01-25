@@ -200,18 +200,17 @@ public class MagicNumberFinder {
                     if(success>0)
                         System.out.println("Number of success so far: "+success);
                     if(!fail) found=true;
-                    if(found) {
-                        System.out.println("found in "+epochID);
-                        System.out.println(allBlockers.length);
-
-                    }
+//                    if(found) {
+//                        System.out.println("found in "+epochID);
+//                        System.out.println(allBlockers.length);
+//                    }
                 }
                 magicNumbersRook[j][i]=magicCandidate;
             }
         }
 
-        System.out.println("yayyyyyyyy");
-/*
+//        System.out.println("yayyyyyyyy");
+
 
         //BISHOP
         HashMap<BitBoard91,BitBoard91> attackPatternBishopTemp ;
@@ -256,41 +255,41 @@ public class MagicNumberFinder {
         }
         System.out.println("algo done in: "+(System.currentTimeMillis()-startTime)+"ms");
 
- */
+
     }
 
+/*
+    public static long geneticS(int rookBlockersMaskNumBit,BitBoard91[] allAttackers, BitBoard91[] allBlockers, int j, int i, long r1,long r2, long r3, long r4){
+        boolean found = false;
+        BitBoard91[] testTable = new BitBoard91[1024]; // Stores attack bitboards
+        int[] usedAt = new int[1024];     // Stores which candidate filled this slot
+        int success=0;
+        int epochID =0;
 
-//    public static void search(BitBoard91[][] rookBlockers,BitBoard91[] allAttackers, BitBoard91[] allBlockers, int j, int i, long r1,long r2, long r3, long r4){
-//        boolean found = false;
-//        BitBoard91[] testTable = new BitBoard91[1024]; // Stores attack bitboards
-//        int[] usedAt = new int[1024];     // Stores which candidate filled this slot
-//        int success=0;
-//        int epochID =0;
-//        while(!found){
-//            epochID++;
-//            boolean fail = false;
-//            for (int k = 0; k < allBlockers.length; k++) {
-//                int hashKey =(int) ((allBlockers[k].getXOR() * magicCandidate)>>>(65-rookBlockers[j][i].bitCount()));
-////                        System.out.println(hashKey);
-//                if(usedAt[hashKey]!=epochID){ // check if we are at the same epoch
-//                    usedAt[hashKey]=epochID; // slot is marked as used for this epoch
-//                    testTable[hashKey]=allAttackers[k];// put relevant attacker in this hash
-//                }else if(!testTable[hashKey].equals(allAttackers[k])){ //wrong collision
-//                    // if it's not equal to the right attack pattern
-////                            System.out.println("number of success out of 16:"+success);
-//                    success=0;
-//                    fail =true;
-//                }else success++;
-//            }
-//
-//            if(success>0)
-//                System.out.println("Number of success so far: "+success);
-//            if(!fail) found=true;
-//            if(found) {
-//                System.out.println("found in "+epochID);
-//                System.out.println(allBlockers.length);
-//
-//            }
-//        }
-//    }
+        return r1;
+    }
+
+    public static void search(int epochID){
+            epochID++;
+            boolean fail = false;
+            for (int k = 0; k < allBlockers.length; k++) {
+                int hashKey =(int) ((allBlockers[k].getXOR() * magicCandidate)>>>(65-rookBlockersMaskNumBit));
+//                        System.out.println(hashKey);
+                if(usedAt[hashKey]!=epochID){ // check if we are at the same epoch
+                    usedAt[hashKey]=epochID; // slot is marked as used for this epoch
+                    testTable[hashKey]=allAttackers[k];// put relevant attacker in this hash
+                }else if(!testTable[hashKey].equals(allAttackers[k])){ //wrong collision
+                    // if it's not equal to the right attack pattern
+//                            System.out.println("number of success out of 16:"+success);
+                    success=0;
+                    fail =true;
+                }else success++;
+            }
+
+            if(success>0)
+                System.out.println("Number of success so far: "+success);
+            if(!fail) found=true;
+    }
+
+ */
 }
