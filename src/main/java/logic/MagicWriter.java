@@ -64,7 +64,7 @@ public class MagicWriter {
                 for(long val: line)
                     writer.println(val);
             }
-            System.out.println("Successfully wrote " + data.length + " items to " + RESOURCE_PATH + "bishop.txt");
+            System.out.println("Successfully wrote " + data.length + " items to " + RESOURCE_PATH + "rook.txt");
         } catch (IOException e) {
             System.err.println("Error writing to file: " + e.getMessage());
         }
@@ -78,7 +78,7 @@ public class MagicWriter {
         File file = new File(RESOURCE_PATH);
 
         if (!file.exists()) {
-            System.out.println("File not found at " + RESOURCE_PATH+ "bishop.txt");
+            System.out.println("File not found at " + RESOURCE_PATH+ "rook.txt");
             return new long[0][];
         }
 

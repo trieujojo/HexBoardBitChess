@@ -31,9 +31,8 @@ public class BitBoard91 {
         return new BitBoard91(this.low&other.low, this.high&other.high);
     }
 
-    public void xor(BitBoard91 other) {
-        this.low ^= other.low;
-        this.high ^= other.high;
+    public BitBoard91 xor(BitBoard91 other) {
+        return new BitBoard91(this.low ^= other.low,this.high ^= other.high);
     }
 
     // Toggles a specific square  (<< operation)
