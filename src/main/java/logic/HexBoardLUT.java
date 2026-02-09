@@ -8,6 +8,7 @@ public class HexBoardLUT {
     private static HexBoardLUT singleton;
     private final HashMap<String, HexCell> board;
     private final String[] cellList;
+    private final HashMap<String,Integer> positionList;
 
     public static HexBoardLUT getSingleton(){
         if(singleton==null) singleton=new HexBoardLUT();
@@ -16,6 +17,7 @@ public class HexBoardLUT {
 
     private HexBoardLUT() {
         cellList=new String[91];
+        positionList= new HashMap<>();
         board = new HashMap<>();
         int limit = 6;int index=0;int indexMagic=0;
         boolean halfway = false;
@@ -42,6 +44,7 @@ public class HexBoardLUT {
         }
         connectCellsDirect();
         connectCellsDiagonal();
+        for(HexCell cell: board.values()) positionList.put(cell.getPosition(),cell.getIndex());
     }
 
     private void connectCellsDirect() {
@@ -148,6 +151,10 @@ public class HexBoardLUT {
         return board.get(pos);
     }
 
+    public HexCell getPosition(int index){
+        return board.get(cellList[index]);
+    }
+
     public String getCoordinateFromIndex(int i){
         return cellList[i];
     }
@@ -156,6 +163,13 @@ public class HexBoardLUT {
         return board.get(cellList[i]);
     }
 
+    public String[] getCellList() {
+        return cellList;
+    }
+
+    public HashMap<String, Integer> getPositionList() {
+        return positionList;
+    }
 
     public static void main(String[] args) {
         HexBoardLUT b = new HexBoardLUT();

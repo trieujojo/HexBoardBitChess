@@ -7,7 +7,9 @@ public class GameMasks {
     private static GameMasks singleton;
     private BitBoard91 board91;
     private BitBoard91[] whitePawnPush;
+    private BitBoard91[] whitePawnAttack;
     private BitBoard91[] blackPawnPush;
+    private BitBoard91[] blackPawnAttack;
     private BitBoard91[] knightAttack;
     private BitBoard91[] kingAttack;
     private BitBoard91[][] rookBlockers;
@@ -27,11 +29,11 @@ public class GameMasks {
 
         board91=new BitBoard91();
         for (int i = 0; i < 91; i++) board91.toggle(i);
-
+        whitePawnAttack = new BitBoard91[91];
         whitePawnPush=new BitBoard91[91];
         for (int i = 0; i < 91; i++) {
             whitePawnPush[i]=new BitBoard91();
-            HexCell current = LUT.getPosition(LUT.getCoordinateFromIndex(i));
+            HexCell current = LUT.getPosition(i);
             String position = current.getPosition(); char col = current.getCol(); int row = current.getRow();
             if((position.equals("c1")||position.equals("i1"))||
                     ((col=='d'||col=='h')&&row<3)||((col=='e'||col=='g')&&row<4)||
@@ -40,19 +42,23 @@ public class GameMasks {
                     ((col=='d'||col=='h')&&row==9)||((col=='e'||col=='g')&&row==10)||(col=='f'&&row==11)) continue;
 //            System.out.print(current.getPosition());
             whitePawnPush[i].toggle(current.getN().getIndex());
+            if(current.getNe()!=null) whitePawnAttack[i].toggle(current.getNe().getIndex());
+            if(current.getNw()!=null) whitePawnAttack[i].toggle(current.getNw().getIndex());
             if(position.equals("b1")||position.equals("c2")||position.equals("d3")||
                     position.equals("e4")||position.equals("f5")||position.equals("g4")
                             ||position.equals("h3")||position.equals("i2")||position.equals("k1"))
                 whitePawnPush[i].toggle(current.getN().getN().getIndex());
         }
-
+        blackPawnAttack = new BitBoard91[91];
         blackPawnPush=new BitBoard91[91];
         for (int i = 0; i < 91; i++) {
             blackPawnPush[i]=new BitBoard91();
-            HexCell current = LUT.getPosition(LUT.getCoordinateFromIndex(i));
+            HexCell current = LUT.getPosition(i);
             int row = current.getRow();
             if(row>7||row==1) continue;
             blackPawnPush[i].toggle(current.getS().getIndex());
+            if(current.getSe()!=null) blackPawnAttack[i].toggle(current.getSe().getIndex());
+            if(current.getSw()!=null) blackPawnAttack[i].toggle(current.getSw().getIndex());
             if (row==7)
                 blackPawnPush[i].toggle(current.getS().getS().getIndex());
         }
@@ -60,7 +66,7 @@ public class GameMasks {
         knightAttack = new BitBoard91[91];
         for (int i = 0; i < 91; i++) {
             knightAttack[i]=new BitBoard91();
-            HexCell current = LUT.getPosition(LUT.getCoordinateFromIndex(i));
+            HexCell current = LUT.getPosition(i);
             if(current.getUr()!=null){
                 if(current.getUr().getN()!=null) knightAttack[i].toggle(current.getUr().getN().getIndex());
                 if(current.getUr().getNe()!=null) knightAttack[i].toggle(current.getUr().getNe().getIndex());
@@ -92,7 +98,7 @@ public class GameMasks {
             rookBlockers[0][i]=new BitBoard91();
             rookBlockers[1][i]=new BitBoard91();
             rookBlockers[2][i]=new BitBoard91();
-            HexCell current = LUT.getPosition(LUT.getCoordinateFromIndex(i));
+            HexCell current = LUT.getPosition(i);
             HexCell dir = current.getN();
             while(dir!=null&&dir.getN()!=null) {
                 rookBlockers[0][i].toggle(dir.getIndex());
@@ -128,7 +134,7 @@ public class GameMasks {
         bishopBlockers =new BitBoard91[91];
         for (int i = 0; i < 91; i++) {
             bishopBlockers[i]=new BitBoard91();
-            HexCell current = LUT.getPosition(LUT.getCoordinateFromIndex(i));
+            HexCell current = LUT.getPosition(i);
             HexCell dir = current.getUr();
             while(dir!=null&&dir.getUr()!=null) {
                 bishopBlockers[i].toggle(dir.getIndex());
@@ -164,7 +170,7 @@ public class GameMasks {
         kingAttack = new BitBoard91[91];
         for (int i = 0; i < 91; i++) {
             kingAttack[i]=new BitBoard91();
-            HexCell current = LUT.getPosition(LUT.getCoordinateFromIndex(i));
+            HexCell current = LUT.getPosition(i);
             if(current.getN()!=null) kingAttack[i].toggle(current.getN().getIndex());
             if(current.getNe()!=null) kingAttack[i].toggle(current.getNe().getIndex());
             if(current.getNw()!=null) kingAttack[i].toggle(current.getNw().getIndex());
@@ -207,5 +213,13 @@ public class GameMasks {
 
     public BitBoard91[] getBishopBlockers() {
         return bishopBlockers;
+    }
+
+    public BitBoard91[] getWhitePawnAttack() {
+        return whitePawnAttack;
+    }
+
+    public BitBoard91[] getBlackPawnAttack() {
+        return blackPawnAttack;
     }
 }

@@ -22,9 +22,8 @@ public class BitBoard91 {
         this.high=high;
     }
 
-    public void or(BitBoard91 other) {
-        this.low |= other.low;
-        this.high |= other.high;
+    public BitBoard91 or(BitBoard91 other) {
+        return new BitBoard91(this.low | other.low,this.high | other.high);
     }
 
     public BitBoard91 and(BitBoard91 other) {

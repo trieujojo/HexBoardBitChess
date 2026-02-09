@@ -31,34 +31,35 @@ public class GameState {
     public GameState(){
         whitePieces = new HashMap<>();
         blackPieces = new HashMap<>();
-        wPawn = new BitBoard91(HexBoardLUT.getSingleton().getPosition("b1").getIndex(),HexBoardLUT.getSingleton().getPosition("c2").getIndex(),
-                HexBoardLUT.getSingleton().getPosition("d3").getIndex(),HexBoardLUT.getSingleton().getPosition("e4").getIndex(),
-                HexBoardLUT.getSingleton().getPosition("f5").getIndex(),HexBoardLUT.getSingleton().getPosition("g4").getIndex(),
-                HexBoardLUT.getSingleton().getPosition("h3").getIndex(), HexBoardLUT.getSingleton().getPosition("i2").getIndex(),
-                HexBoardLUT.getSingleton().getPosition("k1").getIndex());
-        bPawn = new BitBoard91(HexBoardLUT.getSingleton().getPosition("b7").getIndex(),HexBoardLUT.getSingleton().getPosition("c7").getIndex(),
-                HexBoardLUT.getSingleton().getPosition("d7").getIndex(),HexBoardLUT.getSingleton().getPosition("e7").getIndex(),
-                HexBoardLUT.getSingleton().getPosition("f7").getIndex(),HexBoardLUT.getSingleton().getPosition("g7").getIndex(),
-                HexBoardLUT.getSingleton().getPosition("h7").getIndex(), HexBoardLUT.getSingleton().getPosition("i7").getIndex(),
-                HexBoardLUT.getSingleton().getPosition("k7").getIndex());
-        wKing = new BitBoard91(HexBoardLUT.getSingleton().getPosition("g1").getIndex());
-        bKing = new BitBoard91(HexBoardLUT.getSingleton().getPosition("g10").getIndex());
-        wQueen = new BitBoard91(HexBoardLUT.getSingleton().getPosition("e1").getIndex());
-        bQueen = new BitBoard91(HexBoardLUT.getSingleton().getPosition("e10").getIndex());
-        wBishop = new BitBoard91(HexBoardLUT.getSingleton().getPosition("f1").getIndex(),HexBoardLUT.getSingleton().getPosition("f2").getIndex(),HexBoardLUT.getSingleton().getPosition("f3").getIndex());
-        bBishop = new BitBoard91(HexBoardLUT.getSingleton().getPosition("f11").getIndex(),HexBoardLUT.getSingleton().getPosition("f10").getIndex(),HexBoardLUT.getSingleton().getPosition("f9").getIndex());
+        HashMap<String, Integer> positionLU = HexBoardLUT.getSingleton().getPositionList();
+        wPawn = new BitBoard91(positionLU.get("b1"),positionLU.get("c2"),
+                positionLU.get("d3"),positionLU.get("e4"),
+                positionLU.get("f5"),positionLU.get("g4"),
+                positionLU.get("h3"), positionLU.get("i2"),
+                positionLU.get("k1"));
+        bPawn = new BitBoard91(positionLU.get("b7"),positionLU.get("c7"),
+                positionLU.get("d7"),positionLU.get("e7"),
+                positionLU.get("f7"),positionLU.get("g7"),
+                positionLU.get("h7"), positionLU.get("i7"),
+                positionLU.get("k7"));
+        wKing = new BitBoard91(positionLU.get("g1"));
+        bKing = new BitBoard91(positionLU.get("g10"));
+        wQueen = new BitBoard91(positionLU.get("e1"));
+        bQueen = new BitBoard91(positionLU.get("e10"));
+        wBishop = new BitBoard91(positionLU.get("f1"),positionLU.get("f2"),positionLU.get("f3"));
+        bBishop = new BitBoard91(positionLU.get("f11"),positionLU.get("f10"),positionLU.get("f9"));
         wRook = new BitBoard91();
-        wRook.toggle(HexBoardLUT.getSingleton().getPosition("c1").getIndex());
-        wRook.toggle(HexBoardLUT.getSingleton().getPosition("i1").getIndex());
+        wRook.toggle(positionLU.get("c1"));
+        wRook.toggle(positionLU.get("i1"));
         bRook = new BitBoard91();
-        bRook.toggle(HexBoardLUT.getSingleton().getPosition("c8").getIndex());
-        bRook.toggle(HexBoardLUT.getSingleton().getPosition("i8").getIndex());
+        bRook.toggle(positionLU.get("c8"));
+        bRook.toggle(positionLU.get("i8"));
         wKnight=new BitBoard91();
-        wKnight.toggle(HexBoardLUT.getSingleton().getPosition("d1").getIndex());
-        wKnight.toggle(HexBoardLUT.getSingleton().getPosition("h1").getIndex());
+        wKnight.toggle(positionLU.get("d1"));
+        wKnight.toggle(positionLU.get("h1"));
         bKnight=new BitBoard91();
-        bKnight.toggle(HexBoardLUT.getSingleton().getPosition("d9").getIndex());
-        bKnight.toggle(HexBoardLUT.getSingleton().getPosition("h9").getIndex());
+        bKnight.toggle(positionLU.get("d9"));
+        bKnight.toggle(positionLU.get("h9"));
 
         white=new BitBoard91();
         white.or(wBishop);white.or(wRook);white.or(wKing);white.or(wKnight);white.or(wPawn);white.or(wQueen);
@@ -81,7 +82,7 @@ public class GameState {
     }
 
     public BitBoard91 getPossibleMovesFromPosition(String pos){
-        int index = HexBoardLUT.getSingleton().getPosition(pos).getIndex();
+        int index = HexBoardLUT.getSingleton().getPositionList().get(pos);
         return getPossibleMovesFromPosition(index);
     }
 
@@ -99,6 +100,18 @@ public class GameState {
             if(whiteTurn) overlap = white.and(GameMasks.getSingleton().getKnightAttack()[pos]);
             else overlap = black.and(GameMasks.getSingleton().getKnightAttack()[pos]);
             return GameMasks.getSingleton().getKnightAttack()[pos].xor(overlap);
+        }else if(piece.equals("pawn")){
+            if(whiteTurn){
+                BitBoard91 blocking = white.and(GameMasks.getSingleton().getWhitePawnPush()[pos]);//normal move
+                if(blocking.getFirstIndex()!=-1)
+                    possibleAttack = GameMasks.getSingleton().getWhitePawnPush()[pos].xor(blocking);
+                else
+                    possibleAttack = GameMasks.getSingleton().getWhitePawnPush()[pos]; //todo pass by ref->clone
+                possibleAttack=possibleAttack.or( black.and(GameMasks.getSingleton().getWhitePawnAttack()[pos]) ); // get white pawn attak method TODO
+                if(enPassant.getFirstIndex()!=-1) possibleAttack.or(enPassant.and(GameMasks.getSingleton().getWhitePawnAttack()[pos]));
+            }else{
+
+            }
         }
         //// TODO complete this bit here////
         return possibleAttack;
